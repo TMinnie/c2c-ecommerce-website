@@ -1,0 +1,73 @@
+
+body, html {
+  overflow-x: hidden;
+}
+
+.wrapper {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap; 
+}
+
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  min-width: 0;
+  margin-left: 240px; 
+}
+
+/* Card icon styling */
+.card-icon {
+  font-size: 2rem;
+  color: #fff;
+  background: #fc8c06;
+  padding: 10px;
+  border-radius: 10px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Dashboard header */
+.dashboard-header {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+/* Product container if needed */
+#productContainer {
+  display: none;
+}
+
+ @media (max-width: 768px) {
+      .sidebar {
+        font-size: 14px;
+        padding: 10px;
+      }
+
+      .card h4 {
+        font-size: 25px !important;
+      }
+
+      button, table{
+        font-size: 22px !important;
+      }
+
+    }
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+  width: 100%;
+}
+
+.variants-container {
+  overflow: hidden;
+  max-height: 80px; /* default collapsed height */
+  transition: max-height 0.3s ease;
+}

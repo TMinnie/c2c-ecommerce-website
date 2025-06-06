@@ -1,0 +1,85 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+/* Carousel */
+.carousel {
+    max-height: 550px;
+    overflow: hidden;
+}
+
+.carousel-inner img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    object-position: center;
+}
+
+
+#get-started-section {
+    background-color: #fff7ed;
+    padding: 80px 20px;
+}
+
+.btn-get-started {
+    display: inline-block;
+    padding: 15px 35px;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #fc8c06;
+    border-radius: 50px;
+    border: none;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-get-started:hover {
+    background-color: #e67e22;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+.card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Get Started Section */
+#get-started-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #f9f9f9, #f0f0f0);
+    text-align: center;
+}
+
+#get-started-section h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+
+
+/* Featured Items */
+.pick .card {
+    border: none;
+    border-radius: 5px;
+}
+
+.pick .card-img-top {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.pick .card-body p {
+    margin: 0;
+}

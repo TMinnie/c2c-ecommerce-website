@@ -1,0 +1,123 @@
+/* General product container styles */
+.product-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 10px;
+}
+
+/* Product image */
+.square-image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1; /* ensures a square */
+    overflow: hidden;
+    border-radius: 8px; /* Optional rounded corners */
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+}
+
+.product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block; /* Prevents extra space under image */
+}
+
+.square-image-wrapper img {
+    aspect-ratio: 1 / 1;
+}
+
+#product-card{
+    margin-bottom: 15px;
+}
+
+/* Product details section */
+.product-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product-details h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.product-details h5 {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.product-details p {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.product-price {
+    font-size: 1.65rem;
+    font-weight: bold;
+    color: #fc8c06;
+    margin-top: 20px;
+}
+
+.product-details button {
+    display: inline-block;
+    margin-top: 30px;
+    padding: 15px 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    background-color: #fc8c06  !important; /* Bright orange color */
+    color: #fff;
+    border: 2px solid #fc8c06;
+    border-radius: 200px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: auto;         
+    max-width: 200px;  
+}
+
+.product-details button:disabled {
+    background-color: #d6d6d6;
+    cursor: not-allowed;
+}
+
+.product-details button:hover:not(:disabled) {
+    background-color: #e67e22; /* Slightly darker orange */
+    border-color: #e67e22;
+    color:white;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px); /* Lift the button on hover */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .product-container {
+        padding: 20px;
+    }
+
+    .product-image-container {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .product-image {
+        max-height: 400px;
+    }
+
+    .product-details h2 {
+        font-size: 2rem;
+    }
+
+    .product-details button {
+        font-size: 1.1rem;
+        padding: 8px 15px;
+    }
+}
