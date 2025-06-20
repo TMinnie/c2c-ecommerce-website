@@ -10,6 +10,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $confirm = $_POST['confirm_password'];
     $hashed = password_hash($password, PASSWORD_DEFAULT);
     
+    $_SESSION['signup-data'] = [
+        'uFirst' => $_POST['uFirst'],
+        'uLast' => $_POST['uLast'],
+        'email' => $_POST['email']
+        ];
+
     // Check if email exists
     $check = $conn->prepare("SELECT * FROM users WHERE email = ?");
     $check->bind_param("s", $email);
@@ -22,10 +28,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
     else{
+
         // Check if password and confirm password match 
         if (empty($password) || empty($confirm)) {
             $_SESSION['signup-error'] = "Please fill in all fields.";
             header("Location: login.php");
+            exit;
         }
         elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password)) {
             $_SESSION['signup-error'] = "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.";
@@ -46,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['userID'] = $conn->insert_id;
         $_SESSION['uFirst'] = $uFirst;
         $_SESSION['uLast'] = $uLast;
+        unset($_SESSION['signup-data']);
         header("Location: buyerdash.php");
         exit;
     } else {

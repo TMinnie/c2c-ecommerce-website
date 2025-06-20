@@ -13,7 +13,6 @@ $allowed_pages = [
     'buyer' => 'buyer_signup.php',
     'seller' => 'seller_signup.php',
     'address' => 'address.php',
-    'support' => 'support.php',
     'feedback' => 'submit_feedback.php',
 ];
 

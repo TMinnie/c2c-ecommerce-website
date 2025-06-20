@@ -1,7 +1,7 @@
 <?php
-$host = 'sql302.infinityfree.com';
-$db   = 'if0_39173099_tukocart'; // your database name
-$user = 'if0_39173099';     // your MySQL username
+$host = 'localhost';
+$db   = 'tukocart'; // your database name
+$user = 'root';     // your MySQL username
 $pass = '';        
 $charset = 'utf8mb4';
 

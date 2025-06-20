@@ -67,13 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
       loadSellerReviews(document.getElementById("reviewSort").value)
     );
 
-    document.getElementById("clearFilters").addEventListener("click", () => {
-      document.getElementById("reviewSort").value = "latest";
-      document.getElementById("filterRating").value = "";
-      document.getElementById("filterProduct").value = "";
-      document.getElementById("filterDate").value = "";
-      loadSellerReviews("latest");
-    });
 
   }
 
@@ -82,11 +75,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const product = document.getElementById("filterProduct")?.value || "";
     const date = document.getElementById("filterDate")?.value || "";
 
-    const url = new URL("/tukocart/pages/sellerdash/fetch_seller_reviews.php", window.location.origin);
+const url = new URL("/pages/sellerdash/fetch_seller_reviews.php", window.location.origin);
+
+   console.log("Fetching reviews from:", url.toString());
+
     url.searchParams.set("sort", sortBy);
     url.searchParams.set("filterRating", rating);
     url.searchParams.set("filterProduct", product);
     url.searchParams.set("filterDate", date);
+
+    fetch("/pages/sellerdash/fetch_seller_reviews.php")
+  .then(r => console.log(r.status))
+  .catch(e => console.error(e));
+  fetch("/sellerdash/fetch_seller_reviews.php").then(r => console.log(r.status));
+fetch("/fetch_seller_reviews.php").then(r => console.log(r.status));
+
 
     fetch(url)
       .then((response) => response.json())

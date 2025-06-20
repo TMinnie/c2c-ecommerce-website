@@ -45,6 +45,7 @@ if (isset($_SESSION['userID'])) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -64,16 +65,32 @@ if (isset($_SESSION['userID'])) {
     <link rel="stylesheet" href="assets/css/navigation.css" />
     <link rel="stylesheet" href="assets/css/theme.css" />
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-VZZDZ002QX"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-VZZDZ002QX');
+    </script>
+
 </head>
 
 <!--Navigation-->
 <nav class="navbar navbar-expand-lg  py-0 fixed-top">
     <div class="container-fluid ">
         <!-- Logo -->
+         <?php if ($pageName === 'buy' || $pageName === 'sell'): ?>
         <a class="navbar-brand" href="buyerdash.php">
             <img src="assets/images/logoVertical.jpg" class="logo-img img-fluid" alt="Logo" style="max-height: 60px;">
 
         </a>
+        <?php elseif ($pageName === 'out'): ?>
+            <a class="navbar-brand" href="buyerdash.php">
+            <img src="pages/assets/images/logoVertical.jpg" class="logo-img img-fluid" alt="Logo" style="max-height: 60px;">
+        </a>
+        <?php endif; ?>
 
         <!-- Toggler Button -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"

@@ -5,27 +5,37 @@ $where = [];
 $params = [];
 $types = "";
 
-$searchType= $_GET['searchType']??'';
-$searchValue= $_GET['searchValue']??'';
+$searchType = $_GET['searchType'] ?? '';
+$searchValue = $_GET['searchValue'] ?? '';
 
-// Build filter
-if (!empty($searchType)&& !empty($searchValue)) {
-    $where[] = "$searchType = ?";
-    $params[] = $searchValue;
-    $types .= "i";
+if (!empty($searchType) && !empty($searchValue)) {
+    if (in_array($searchType, ['paymentID', 'orderID'])) {
+        $where[] = "p.$searchType = ?";
+        $params[] = $searchValue;
+        $types .= "i";
+    } elseif (in_array($searchType, ['sellerID', 'buyerID'])) {
+        $where[] = "o.$searchType = ?";
+        $params[] = $searchValue;
+        $types .= "i";
+    }
 }
 
 if (!empty($_GET['paymentDate'])) {
-    $where[] = "DATE(paymentDate) = ?";
+    $where[] = "DATE(p.paymentDate) = ?";
     $params[] = $_GET['paymentDate'];
     $types .= "s";
 }
 
-$sql = "SELECT * FROM paymentrecords";
+// Prepare the SQL query with dynamic WHERE conditions
+$sql = "SELECT p.*, o.sellerID, o.buyerID 
+        FROM paymentrecords p 
+        JOIN orders o ON p.orderID = o.orderID";
+
 if ($where) {
     $sql .= " WHERE " . implode(" AND ", $where);
 }
-$sql .= " ORDER BY paymentDate DESC";
+$sql .= " ORDER BY p.paymentDate DESC";
+
 
 $stmt = $conn->prepare($sql);
 if ($params) {
@@ -74,6 +84,8 @@ $result = $stmt->get_result();
                             <select name="searchType" class="form-select">
                                 <option value="paymentID">Payment ID</option>
                                 <option value="orderID">Order ID</option>
+                                <option value="sellerID">Seller ID</option>
+                                <option value="buyerID">Buyer ID</option>
                             </select>
                             <input type="text" name="searchValue" class="form-control" placeholder="Enter ID...">
                         </div>
@@ -84,11 +96,12 @@ $result = $stmt->get_result();
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-outline-secondary w-100">Apply Filters</button>
                     </div>
-                     <a href="export_orders.php?<?= http_build_query($_GET) ?>" class="btn btn-secondary w-100">Download CSV</a>
+                     <div class="">
+                        <button type="button" class="btn btn-secondary w-100" onclick="exportCSV()">Export CSV</button>
+                    </div>
+
                 </form>
             </div>
-
-
 
                     <table class="table table-bordered align-middle">
                         <thead class="table-light">
@@ -100,24 +113,24 @@ $result = $stmt->get_result();
                                 <th>Amount</th>
                             </tr>
                         </thead>
-                        <tbody>
-                        <?php while ($row = $result->fetch_assoc()) { ?>
-                            <tr>
-                                <td><?= $row['paymentID']; ?></td>
-                                <td>
-                                    <a href="manage_orders.php?orderID=<?= $row['orderID'] ?>">
-                                        <?= $row['orderID'] ?>
-                                    </a>
-                                </td>
-                                <td><?= $row['paymentDate']; ?></td>
-                                <td>
-                                        <?= $row['paymentStatus']; ?>
-                                </td>
-                                <td>R <?= number_format($row['paymentAmount'], 2); ?></td>
 
-                            </tr>
-                        <?php } ?>
+                        <tbody>
+                            <?php if ($result->num_rows > 0): ?>
+                                <?php while ($row = $result->fetch_assoc()) {
+                                    $data[] = $row; ?>
+                                    <tr>
+                                        <td><?= $row['paymentID']; ?></td>
+                                        <td><a href="manage_orders.php?orderID=<?= $row['orderID']; ?>"><?= $row['orderID']; ?></a></td>
+                                        <td><?= $row['paymentDate']; ?></td>
+                                        <td><?= $row['paymentStatus']; ?></td>
+                                        <td>R <?= number_format($row['paymentAmount'], 2); ?></td>
+                                    </tr>
+                                <?php } ?>
+                            <?php else: ?>
+                                <tr><td colspan="7" class="text-center">No transactions found.</td></tr>
+                            <?php endif; ?>
                         </tbody>
+
                     </table>
 
                     
@@ -128,6 +141,21 @@ $result = $stmt->get_result();
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="module">
+    import { downloadCSV } from './exportCSV.js';
+
+    // Assign to window inside DOMContentLoaded so it's globally available
+    document.addEventListener('DOMContentLoaded', () => {
+        const data = <?= json_encode($data); ?>;
+        const headers = ['paymentID', 'orderID', 'sellerID', 'buyerID', 'paymentDate', 'paymentStatus', 'paymentAmount'];
+
+        window.exportCSV = function () {
+            downloadCSV(data, headers, "transactions_export.csv");
+        };
+    });
+</script>
+
 
 
 </body>

@@ -108,7 +108,6 @@ if (isset($_SESSION['userID'])) {
             <br>
             <h5 class="sidebar-head">❓ Support</i></h5>
             <a href="javascript:void(0)" class="account-link" onclick="loadContent('feedback')">Submit Feedback</a>
-            <a href="javascript:void(0)" class="account-link" onclick="loadContent('support')">Help Centre</a>
         </div>
 
         <!-- Content Area for Dynamic Content -->
@@ -220,6 +219,8 @@ if (isset($_SESSION['userID'])) {
         });
 
     </script>
+
+    
 
 </body>
 

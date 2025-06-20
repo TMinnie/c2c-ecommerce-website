@@ -132,7 +132,7 @@ $result = $stmt->get_result();
                         <button type="submit" class="btn btn-outline-secondary w-100">Apply Filters</button>
                     </div>
                     
-                     <a href="export_orders.php?<?= http_build_query($_GET) ?>" class="btn btn-secondary w-100">Download CSV</a>
+                    <button type="button" class="btn btn-secondary w-100" onclick="exportCSV()">Export CSV</button>
                 </form>
                 </div>
                 <!-- Orders Table -->
@@ -154,7 +154,8 @@ $result = $stmt->get_result();
                         <tbody>
                             <?php if ($result->num_rows > 0): ?>
 
-                                <?php while ($order = $result->fetch_assoc()): ?>
+                                <?php while ($order = $result->fetch_assoc()): 
+                                    $data[] = $order;?>
                                     <tr>
                                         <td>
                                             <a href="#" class="order-details-link" data-order-id="<?= $order['orderID'] ?>" data-bs-toggle="modal" data-bs-target="#orderDetailsModal">
@@ -250,6 +251,20 @@ $result = $stmt->get_result();
         });
     });
     </script>
+
+    <script type="module">
+    import { downloadCSV } from './exportCSV.js';
+
+    // Assign to window inside DOMContentLoaded so it's globally available
+    document.addEventListener('DOMContentLoaded', () => {
+        const data = <?= json_encode($data); ?>;
+        const headers = ['orderID', 'buyerID', 'orderDate', 'totalAmount', 'orderStatus', 'sellerID', 'deliveryFee'];
+
+        window.exportCSV = function () {
+            downloadCSV(data, headers, "orders_export.csv");
+        };
+    });
+</script>
 
     
 </body>

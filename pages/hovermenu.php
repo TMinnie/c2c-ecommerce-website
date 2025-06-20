@@ -68,14 +68,18 @@ foreach ($categories as $cat) {
             <?php foreach ($main['children'] as $childName): ?>
               <?php
               // Find the child category ID
-              foreach ($categories as $cat) {
-                if ($cat['name'] === $childName) {
-                  $childID = $cat['categoryID'];
-                  break;
-                }
+              $childID = null;
+              foreach ($categories as $catOption) {
+                  if ($catOption['name'] === $childName) {
+                      $childID = $catOption['categoryID'];
+                      break;
+                  }
               }
+
               ?>
-              <li><a href="category.php?categoryID=<?= $cat['categoryID'] ?>"><?= htmlspecialchars($cat['name']) ?></a></li>
+            <?php if ($childID): ?>
+              <li><a href="category.php?categoryID=<?= $childID ?>"><?= htmlspecialchars($childName) ?></a></li>
+            <?php endif; ?>
             <?php endforeach; ?>
           </ul>
         </div>

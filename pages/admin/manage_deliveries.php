@@ -6,23 +6,23 @@ $where = [];
 $params = [];
 $types = "";
 
-if (!empty($_GET['deliveryID'])) {
-    $where[] = "deliveryID = ?";
-    $params[] = $_GET['deliveryID'];
-    $types .= "i";
-}
-if (!empty($_GET['orderID'])) {
-    $where[] = "orderID = ?";
-    $params[] = $_GET['orderID'];
-    $types .= "i";
-}
-if (!empty($_GET['deliveryStatus'])) {
-    $where[] = "deliveryStatus = ?";
-    $params[] = $_GET['deliveryStatus'];
-    $types .= "s";
+if (!empty($_GET['searchType']) && !empty($_GET['searchValue'])) {
+    $searchType = $_GET['searchType'];
+    $searchValue = $_GET['searchValue'];
+
+    if (in_array($searchType, ['deliveryID', 'orderID', 'sellerID', 'buyerID'])) {
+        // Ensure the correct table prefix is used for joined fields
+        $column = ($searchType == 'sellerID' || $searchType == 'buyerID') ? "o.$searchType" : "d.$searchType";
+        $where[] = "$column = ?";
+        $params[] = $searchValue;
+        $types .= "i";
+    }
 }
 
-$sql = "SELECT * FROM deliveries";
+$sql = "SELECT d.*, o.sellerID, o.buyerID 
+        FROM deliveries d
+        JOIN orders o ON d.orderID = o.orderID";
+
 if ($where) {
     $sql .= " WHERE " . implode(" AND ", $where);
 }
@@ -71,11 +71,14 @@ $result = $stmt->get_result();
                 <div class="col-md-4">
                                 <div class="input-group">
                                     <select name="searchType" class="form-select">
-                                        <option value="productID">Delivery ID</option>
-                                        <option value="orderID">Order ID</option>
+                                        <option value="deliveryID" <?= (isset($_GET['searchType']) && $_GET['searchType'] == 'deliveryID') ? 'selected' : '' ?>>Delivery ID</option>
+                                        <option value="orderID" <?= (isset($_GET['searchType']) && $_GET['searchType'] == 'orderID') ? 'selected' : '' ?>>Order ID</option>
+                                        <option value="sellerID" <?= (isset($_GET['searchType']) && $_GET['searchType'] == 'sellerID') ? 'selected' : '' ?>>Seller ID</option>
+                                        <option value="buyerID" <?= (isset($_GET['searchType']) && $_GET['searchType'] == 'buyerID') ? 'selected' : '' ?>>Buyer ID</option>
                                     </select>
-                                    <input type="text" name="searchValue" id="searchValue" class="form-control" placeholder="Enter ID...">
+                                    <input type="text" name="searchValue" id="searchValue" class="form-control" placeholder="Enter ID..." value="<?= htmlspecialchars($_GET['searchValue'] ?? '') ?>">
                                 </div>
+
                             </div>
                 <div class="col-md-3">
                     <select name="deliveryStatus" class="form-select">
@@ -89,8 +92,7 @@ $result = $stmt->get_result();
                 <div class="col-md-3">
                     <button type="submit" class="btn btn-outline-secondary w-100">Apply Filters</button>
                 </div>
-                <a href="export_orders.php?<?= http_build_query($_GET) ?>" class="btn btn-secondary w-100">Download CSV</a>
-
+                    <button type="button" class="btn btn-secondary w-100" onclick="exportCSV()">Export CSV</button>
             </form>
             </div>
 
@@ -107,7 +109,8 @@ $result = $stmt->get_result();
                 </thead>
                 <tbody>
                     <?php if ($result->num_rows > 0): ?>
-                        <?php while ($row = $result->fetch_assoc()): ?>
+                        <?php while ($row = $result->fetch_assoc()):
+                            $data[] = $row;?>
                             <tr>
                                 <td><?= $row['deliveryID']; ?></td>
                                 <td>
@@ -133,6 +136,33 @@ $result = $stmt->get_result();
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script type="module">
+        import { downloadCSV } from './exportCSV.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = <?= json_encode($data ?? []); ?>;
+
+            // Define actual keys in data
+            const fields = ['deliveryID', 'orderID', 'deliveryStatus', 'dispatchDate', 'deliveryDate'];
+
+            // Define column headers for export
+            const headers = ['Delivery ID', 'Order ID', 'Status', 'Dispatch Date', 'Delivery Date'];
+
+            // Transform data for export
+            const formattedData = data.map(row => {
+                const formattedRow = {};
+                fields.forEach((field, i) => {
+                    formattedRow[headers[i]] = row[field] ?? '';
+                });
+                return formattedRow;
+            });
+
+            window.exportCSV = function () {
+                downloadCSV(formattedData, headers, "deliveries_export.csv");
+            };
+        });
+
+    </script>
 
 </body>
 </html>

@@ -97,7 +97,7 @@ if ($isCartEmpty) {
 <?php include 'hovermenu.php'; ?>
 
 <!--Cart-->
-<div class="container my-5">
+<div class="container mt-5" style="margin-bottom: 150px;">
     <h3 class="mb-2">Shopping Cart</h3>
     <hr>
     <input type="hidden" name="cartID" value="<?php echo $cartID; ?>">
@@ -241,16 +241,17 @@ if ($isCartEmpty) {
 <!--JS-->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-$(".quantity-input").on("change", function () {
+$(".quantity-input").on("change", function (event) {
+    event.preventDefault(); // 🔒 Stop the form-like behavior
+
     const input = $(this);
-    const productID = input.data("productid");
-    const cartID = input.data("cartid");
+    const cartItemID = input.data("cartitemid");
     const quantity = parseInt(input.val());
     const max = parseInt(input.attr("max"));
 
     if (quantity > max) {
         alert("Quantity cannot exceed available stock.");
-        input.val(max); // Reset to max value
+        input.val(max);
         return;
     }
 
@@ -259,20 +260,25 @@ $(".quantity-input").on("change", function () {
         method: "POST",
         dataType: "json",
         data: {
-            productID: productID,
-            cartID: cartID,
+            cartItemID: cartItemID,
             quantity: quantity
         },
         success: function (response) {
-            const row = input.closest("tr");
-            row.find("td:nth-child(6)").text("R" + response.subtotal);
-            $("tfoot th:last").text("R" + response.total);
+            if (response.success) {
+                // 🔄 Update the UI without refreshing
+                const row = input.closest("tr");
+                row.find("td:nth-child(6)").text("R" + response.subtotal);
+                $("tfoot th:last").text("R" + response.total);
+            } else {
+                alert(response.message);
+            }
         },
         error: function () {
             alert("Something went wrong. Try again.");
         }
     });
 });
+
 
 
 </script>

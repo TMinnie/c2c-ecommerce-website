@@ -30,29 +30,33 @@ if (isset($_SESSION['signup-error'])) {
 
 <body style="background-image: url('assets/images/orangepinkbackground.jpg'); background-repeat: no-repeat; background-size: cover;">
 
+                
     <div class="container <?php echo $signupErrorActive ? 'right-panel-active' : ''; ?>" id="container">
 
         <div class="form-container sign-up-container">
             <form action="register_process.php" method="POST">
-                <h1 style="font-size:30px">Create Account</h1>
+                <h1 style="font-size:30px" class="mt-3">Create Account</h1>
                 <br />
-                <input type="text" name="uFirst" placeholder="First name" required />
-                <input type="text" name="uLast" placeholder="Last Name" required />
-                <input type="email" name="email" placeholder="Email" required />
+                <input type="text" name="uFirst" placeholder="First name" required value="<?php echo isset($_SESSION['signup-data']['uFirst']) ? htmlspecialchars($_SESSION['signup-data']['uFirst']) : ''; ?>" />
+                <input type="text" name="uLast" placeholder="Last Name" required value="<?php echo isset($_SESSION['signup-data']['uLast']) ? htmlspecialchars($_SESSION['signup-data']['uLast']) : ''; ?>" />
+                <input type="email" name="email" placeholder="Email" required value="<?php echo isset($_SESSION['signup-data']['email']) ? htmlspecialchars($_SESSION['signup-data']['email']) : ''; ?>" />
                 <input type="password" name="password" placeholder="Password" required minlength="6" />
                 <input type="password" name="confirm_password" placeholder="Confirm Password" required />
                 <br />
+
                 <?php
                 if (isset($_SESSION['signup-error'])) {
                     echo '<div class="alert alert-danger">' . $_SESSION['signup-error'] . '</div>';
                     unset($_SESSION['signup-error']);
+                    
                 }
                 if (isset($_SESSION['success'])) {
                     echo '<div class="alert alert-success">' . $_SESSION['success'] . '</div>';
                     unset($_SESSION['success']);
                 }
                 ?>
-                <button type="submit">Sign Up</button>
+                
+                <button type="submit" class="mb-3">Sign Up</button>
             </form>
         </div>
         <div class="form-container sign-in-container">
@@ -75,7 +79,7 @@ if (isset($_SESSION['signup-error'])) {
             <div class="overlay">
                 <div class="overlay-panel overlay-left">
                     <h1>Already have an account?</h1>
-                    <button class="ghost" id="signIn">Sign In</button>
+                    <button class="ghost" id="signIn"  style="margin-top: 30px">Sign In</button>
                 </div>
                 <div class="overlay-panel overlay-right">
                     <h1>Hello, Friend!</h1>

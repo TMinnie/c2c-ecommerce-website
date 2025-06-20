@@ -1,64 +1,78 @@
 <?php
 require_once "db.php";
 
-$productID = $_POST['productID'];
-$cartID = $_POST['cartID'];
-$quantity = $_POST['quantity'];
+if (!isset($_POST['cartItemID']) || !isset($_POST['quantity'])) {
+    echo json_encode(['success' => false, 'message' => 'Missing required fields.']);
+    exit;
+}
 
-// Get size from the cart
-$stmt = $conn->prepare("SELECT size FROM cartitems WHERE cartID = ? AND productID = ?");
-$stmt->bind_param("ii", $cartID, $productID);
+$cartItemID = (int)$_POST['cartItemID'];
+$quantity = (int)$_POST['quantity'];
+
+// Fetch productID, cartID, and size from cartitems
+$stmt = $conn->prepare("SELECT productID, cartID, size FROM cartitems WHERE cartItemID = ?");
+$stmt->bind_param("i", $cartItemID);
 $stmt->execute();
 $result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    echo json_encode(['success' => false, 'message' => 'Cart item not found.']);
+    exit;
+}
+
 $row = $result->fetch_assoc();
+$productID = $row['productID'];
+$cartID = $row['cartID'];
 $size = $row['size'];
 
-// Get available stock
+// Check stock
 $stmt = $conn->prepare("SELECT stockQuantity FROM product_variants WHERE productID = ? AND size = ?");
 $stmt->bind_param("is", $productID, $size);
 $stmt->execute();
 $stockResult = $stmt->get_result();
-$stockRow = $stockResult->fetch_assoc();
-$maxStock = $stockRow['stockQuantity'];
 
-if ($quantity > $maxStock) {
-    echo json_encode(["error" => "Quantity exceeds available stock."]);
+if ($stockResult->num_rows === 0) {
+    echo json_encode(['success' => false, 'message' => 'Stock not found.']);
     exit;
 }
 
-// Update quantity
-$stmt = $conn->prepare("UPDATE cartitems SET quantity = ? WHERE productID = ? AND cartID = ?");
-$stmt->bind_param("iii", $quantity, $productID, $cartID);
+$stockRow = $stockResult->fetch_assoc();
+$maxStock = (int)$stockRow['stockQuantity'];
+
+if ($quantity > $maxStock) {
+    echo json_encode(['success' => false, 'message' => 'Quantity exceeds available stock.']);
+    exit;
+}
+
+// Update quantity in cartitems
+$stmt = $conn->prepare("UPDATE cartitems SET quantity = ? WHERE cartItemID = ?");
+$stmt->bind_param("ii", $quantity, $cartItemID);
 $stmt->execute();
 
-// Fetch updated price and subtotal
-$stmt = $conn->prepare("
-    SELECT p.pPrice 
-    FROM products p
-    WHERE p.productID = ?
-");
+// Fetch price of product
+$stmt = $conn->prepare("SELECT pPrice FROM products WHERE productID = ?");
 $stmt->bind_param("i", $productID);
 $stmt->execute();
 $result = $stmt->get_result();
-$row = $result->fetch_assoc();
+$price = $result->fetch_assoc()['pPrice'];
 
-$price = $row['pPrice'];
 $subtotal = $price * $quantity;
 
 // Get total cart value
 $stmt = $conn->prepare("
-    SELECT SUM(p.pPrice * ci.quantity) as total 
-    FROM cartitems ci 
-    JOIN products p ON ci.productID = p.productID 
+    SELECT SUM(p.pPrice * ci.quantity) AS total
+    FROM cartitems ci
+    JOIN products p ON ci.productID = p.productID
     WHERE ci.cartID = ?
 ");
 $stmt->bind_param("i", $cartID);
 $stmt->execute();
-$result = $stmt->get_result();
-$totalRow = $result->fetch_assoc();
+$totalResult = $stmt->get_result();
+$total = $totalResult->fetch_assoc()['total'];
 
 echo json_encode([
+    'success' => true,
     'subtotal' => number_format($subtotal, 2),
-    'total' => number_format($totalRow['total'], 2)
+    'total' => number_format($total, 2)
 ]);
 ?>

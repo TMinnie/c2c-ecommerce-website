@@ -16,8 +16,8 @@
 <body>
     <div class="sidebar">
         
-        <h5 class="sidebar-head">📊 Analytics</h5>
-        <a href="dashboard.php" class="account-link">TukoCart Stats</a>
+        <h5 class="sidebar-head">📊 Platform</h5>
+        <a href="dashboard.php" class="account-link">Analytics</a>
         <a href="feedback_response.php" class="account-link">Respond to Feedback</a>
         
         <br>
@@ -28,8 +28,8 @@
 
         <br> 
         <h5 class="sidebar-head">🛒 Products</h5>
-        <a href="manage_reviews.php" class="account-link">Manage Reviews</a>
         <a href="manage_products.php" class="account-link">Manage Products</a>
+        <a href="manage_reviews.php" class="account-link">Manage Reviews</a>
         <a href="manage_categories.php" class="account-link">Manage Categories</a>
 
         <br>

@@ -47,10 +47,9 @@
       <h5>Help</h5>
       <ul>
         <li><a href="account.php?page=support">Help Center</a></li>
-        <li><a href="#">Contact us</a></li>
         <li><a href="account.php?page=support">FAQs</a></li>
-        <li><a href="#">Submit Feedback</a></li>
-        <li><a href="#">Log a Complaint</a></li>
+        <li><a href="account.php?page=feedback">Submit Feedback</a></li>
+        <li><a href="account.php?page=feedback">Log a Complaint</a></li>
       </ul>
     </div>
     <div class="footer-column mt-3">

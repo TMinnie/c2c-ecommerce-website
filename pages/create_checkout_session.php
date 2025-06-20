@@ -30,7 +30,7 @@ $amount = intval($total * 100);
 
 // Create checkout session
 $session = \Stripe\Checkout\Session::create([
-    'payment_method_types' => ['card'],
+    //'payment_method_types' => ['card'],
     'line_items' => [[
         'price_data' => [
             'currency' => 'zar',

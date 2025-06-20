@@ -171,13 +171,12 @@ if (isset($_GET['edit'])) {
                 
 
                 <!-- Select Category -->
-                <form id="mainCategoryForm" class="mb-5" method="GET" action="manage_categories.php">
-
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="mb-0">Manage Categories</h3>
                     <button class="btn btn-primary" onclick="openAddCategoryModal()">+ Add Category</button>
                 </div>
                 <hr>
+                <form id="mainCategoryForm" class="mb-5" method="GET" action="manage_categories.php">
                 <div class="card p-3 mb-4 shadow-sm rounded-3">
                     <label for="main" class="form-label">Select Main Category:</label>
                     <div class="input-group">
@@ -281,15 +280,18 @@ if (isset($_GET['edit'])) {
                                     </div>
 
                                     <div class="mb-3">
-                                        
                                         <label class="form-label">Current Saved Image:</label>
-                                        <div id="currentImage"></div> 
+                                        <div id="currentImage">
+                                            <div class="mb-3" id="imagePreviewContainer" style="display: none;">
+                                                <img id="currentImagePreview" src="" alt="Current Image" class="img-fluid" style="max-width: 100px;">
+                                            </div>
+
+                                        </div> 
                                     </div>
                                 </div>
 
                                 <div class="modal-footer">
-                                    <button type="submit" class="btn btn-success"><?= $edit ? 'Update' : 'Add' ?>
-                                        Category</button>
+                                    <button type="submit" class="btn btn-success">Save</button>
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Cancel</button>
                                 </div>
@@ -310,30 +312,43 @@ if (isset($_GET['edit'])) {
     <script>
     const categoryModal = new bootstrap.Modal(document.getElementById('categoryModal'));
 
-
     function openAddCategoryModal() {
-        document.getElementById('categoryModalLabel').textContent = 'Add Category';
-        document.getElementById('categoryForm').reset();
-        document.getElementById('categoryID').value = '';
-        document.getElementById('currentImage').innerHTML = '';
-        categoryModal.show();
+        // Clear form
+        document.getElementById("categoryForm").reset();
+        document.getElementById("categoryID").value = '';
+        document.getElementById("categoryModalLabel").innerText = 'Add New Category';
+
+        // Show modal using Bootstrap 5 API
+        var modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+        modal.show();
     }
 
     function openEditCategoryModal(category) {
-        document.getElementById('categoryModalLabel').textContent = 'Edit Category';
-        document.getElementById('categoryID').value = category.categoryID;
-        document.getElementById('categoryName').value = category.name;
-        document.getElementById('categoryDescription').value = category.description;
-        document.getElementById('parentID').value = category.parentID ?? 'null';
+        document.getElementById("categoryForm").reset();
 
+        document.getElementById("categoryID").value = category.categoryID;
+        document.getElementById("categoryName").value = category.name;
+        document.getElementById("categoryDescription").value = category.description;
+        document.getElementById("parentID").value = category.parentID ?? 'null';
+
+        document.getElementById("categoryModalLabel").innerText = 'Edit Category';
+
+        // Handle the current image preview
         if (category.imagePath) {
-            document.getElementById('currentImage').innerHTML = `<img src="../assets/images/${category.imagePath}" width="100">`;
+            const imageContainer = document.getElementById("imagePreviewContainer");
+            const image = document.getElementById("currentImagePreview");
+
+            image.src = "../assets/images/" + category.imagePath;
+            image.alt = category.name + " Image";
+            imageContainer.style.display = "block";
         } else {
-            document.getElementById('currentImage').innerHTML = '';
+            document.getElementById("imagePreviewContainer").style.display = "none";
         }
 
-        categoryModal.show();
+        var modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+        modal.show();
     }
+
 </script>
 
 </body>

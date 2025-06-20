@@ -1,4 +1,9 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 require '../db.php'; 
 
@@ -15,10 +20,10 @@ $range = isset($_GET['range']) ? (int)$_GET['range'] : 30;
 // === SALES PER DAY (no duplicate orders) ===
 $sql = "
   SELECT DATE(pr.paymentDate) as payment_day, SUM(pr.paymentAmount) as total
-  FROM paymentRecords pr
+  FROM paymentrecords pr
   JOIN (
       SELECT MAX(paymentID) as latest_payment_id
-      FROM paymentRecords
+      FROM paymentrecords
       WHERE paymentStatus = 'Paid'
       GROUP BY orderID
   ) latest ON pr.paymentID = latest.latest_payment_id
@@ -61,10 +66,10 @@ foreach ($period as $date) {
 // === GROSS SALES (total for period) ===
 $sqlGross = "
   SELECT SUM(pr.paymentAmount) AS gross_total
-  FROM paymentRecords pr
+  FROM paymentrecords pr
   JOIN (
       SELECT MAX(paymentID) AS latest_payment_id
-      FROM paymentRecords
+      FROM paymentrecords
       WHERE paymentStatus = 'Paid'
       GROUP BY orderID
   ) latest ON pr.paymentID = latest.latest_payment_id
@@ -117,7 +122,7 @@ $bestTime = $bestTimeRow['best_time'] ?? 'N/A';
 $sqlRefunds = "
   SELECT COUNT(DISTINCT pr.paymentID) AS refund_count, 
          SUM(pr.paymentAmount) AS refund_total
-  FROM paymentRecords pr
+  FROM paymentrecords pr
   WHERE pr.paymentStatus = 'Refunded'
     AND pr.orderID IN (
       SELECT DISTINCT o.orderID
@@ -145,7 +150,7 @@ $balance = $grossSales - $refundTotal;
 $sqlCharges = "
   SELECT COUNT(DISTINCT pr.paymentID) AS charge_count, 
          SUM(pr.paymentAmount) AS charge_total
-  FROM paymentRecords pr
+  FROM paymentrecords pr
   JOIN orders o ON pr.orderID = o.orderID
   JOIN orderitems oi ON o.orderID = oi.orderID
   JOIN products p ON oi.productID = p.productID

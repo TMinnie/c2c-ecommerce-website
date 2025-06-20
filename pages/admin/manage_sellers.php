@@ -13,6 +13,25 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit;
 }
+// Handle seller update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sellerID'])) {
+    $sellerID = $_POST['sellerID'];
+    $businessName = $_POST['businessName'];
+    $pickupAddress = $_POST['pickupAddress'];
+    $city = $_POST['city'];
+    $postalcode = $_POST['postalcode'];
+    $status = $_POST['status'];
+
+    $stmt = $conn->prepare("UPDATE sellers SET businessName=?, pickupAddress=?, city=?, postalcode=?, status=? WHERE sellerID=?");
+    $stmt->bind_param("sssssi", $businessName, $pickupAddress, $city, $postalcode, $status, $sellerID);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Seller updated successfully');</script>";
+    } else {
+        echo "<script>alert('Failed to update seller');</script>";
+    }
+}
+
 
 // Handle accept or reject actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sellerID'], $_POST['action'])) {
@@ -272,7 +291,21 @@ function renderSellersTable($conn, $status, $search = '')
                 </form>';
             }
 
-            $html .= '</td></tr>';
+            
+
+            $html .= '
+            
+            <button class="btn btn-warning btn-sm editSellerBtn mt-1"
+                data-seller-id="' . $row['sellerID'] . '"
+                data-business-name="' . htmlspecialchars($row['businessName']) . '"
+                data-pickup-address="' . htmlspecialchars($row['pickupAddress']) . '"
+                data-city="' . htmlspecialchars($row['city']) . '"
+                data-postal-code="' . htmlspecialchars($row['postalcode']) . '"
+                data-status="' . $row['status'] . '"
+            >
+                Edit
+            </button>
+            </td></tr>';
         }
         return $html;
     }
@@ -365,9 +398,70 @@ function renderSellersTable($conn, $status, $search = '')
         </div>
     </div>
 
+    <!-- Edit Seller Modal -->
+<div class="modal fade" id="editSellerModal" tabindex="-1" aria-labelledby="editSellerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="editSellerForm" method="POST">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editSellerModalLabel">Edit Seller</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="sellerID" id="editSellerID">
+          <div class="mb-3">
+            <label class="form-label">Business Name</label>
+            <input type="text" class="form-control" name="businessName" id="editBusinessName" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Pickup Address</label>
+            <input type="text" class="form-control" name="pickupAddress" id="editPickupAddress" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">City</label>
+            <input type="text" class="form-control" name="city" id="editCity" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Postal Code</label>
+            <input type="text" class="form-control" name="postalcode" id="editPostalCode" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select name="status" id="editStatus" class="form-select">
+              <option value="pending">Pending</option>
+              <option value="accepted">Accepted</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Save Changes</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+document.querySelectorAll('.editSellerBtn').forEach(button => {
+    button.addEventListener('click', () => {
+        const modal = new bootstrap.Modal(document.getElementById('editSellerModal'));
+        document.getElementById('editSellerID').value = button.dataset.sellerId;
+        document.getElementById('editBusinessName').value = button.dataset.businessName;
+        document.getElementById('editPickupAddress').value = button.dataset.pickupAddress;
+        document.getElementById('editCity').value = button.dataset.city;
+        document.getElementById('editPostalCode').value = button.dataset.postalCode;
+        document.getElementById('editStatus').value = button.dataset.status;
+        modal.show();
+    });
+});
+</script>
 
 
 </body>

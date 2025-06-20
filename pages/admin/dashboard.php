@@ -190,7 +190,7 @@ $topCategories = $conn->query("SELECT c.name, COUNT(p.productID) AS productCount
                         </div>
 
                         <!-- Section 4: Order and Sales Stats -->
-                        <a href="stat_sales.php" class="title-link"><div class="section-title">Orders & Sales <i class="fa-solid fa-caret-right text-muted"></i></div></a> 
+                        <div class="section">Orders & Sales</div>
                         <div class="row mb-4">
                             <div class="col-md-5">
                                 <div class="card p-3 text-center">
@@ -275,6 +275,10 @@ $topCategories = $conn->query("SELECT c.name, COUNT(p.productID) AS productCount
             </div>
         </div>
     </div>
+
+    <div id="auth-button"></div>
+<div id="view-selector"></div>
+<div id="chart-container"></div>
 
 
     <!-- Bootstrap JS Bundle with Popper -->

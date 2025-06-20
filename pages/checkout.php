@@ -215,7 +215,7 @@ foreach ($sellerOrders as $sellerID => $seller) {
                             <strong>R<?php echo number_format($grandTotal, 2); ?></strong>
                         </li>
 
-                        <button type="submit" class="btn btn-orange mt-2 w-100">Continue to Payment</button>
+                        <button type="submit" class="btn btn-orange mt-2 w-100">Place Order</button>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,7 @@
 <?php $pageName = 'buy'; ?>
 <?php
+require_once __DIR__ . '/../stripe-php-master/init.php';
+\Stripe\Stripe::setApiKey('sk_test_51RQOlhP5EnF2nJIgS4zx9eNrZqqolx9sx5JkdhHdeZTXcVkK2O7a95XvdZjvigNmetGtW85o5xpgKdEUSLAde09700vGYaYVtx');
 
 session_start();
 require_once "db.php";
@@ -163,7 +165,8 @@ function clearBuyerCart($buyerID) {
 <?php include 'nav.php'; ?>
 
 <div class="container my-5">
-    <h2 class="mb-4">Order Confirmation</h2>
+    <h2>Order Confirmation</h2>
+    <hr class="mb-4">
     <div class="alert alert-success">
         <h5>Your order(s) have been successfully placed!</h5>
     </div>

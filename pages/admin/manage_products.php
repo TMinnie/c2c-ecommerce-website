@@ -6,8 +6,32 @@ if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'admin') {
 }
 include '../db.php';
 
+$seasonalTag = '';
+$result = $conn->query("SELECT seasonalTag FROM products WHERE seasonalTag IS NOT NULL AND seasonalTag != '' LIMIT 1");
+if ($row = $result->fetch_assoc()) {
+    $seasonalTag = $row['seasonalTag'];
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_all_tags'])) {
+    $seasonalTag = trim($_POST['seasonalTag']);
+
+
+    $stmt = $conn->prepare("UPDATE products SET seasonalTag = ?");
+    $stmt->bind_param("s", $seasonalTag);
+    
+    if ($stmt->execute()) {
+        $_SESSION['success'] = "Seasonal tag updated for all products.";
+    } else {
+        $_SESSION['success'] = "Failed to update seasonal tag.";
+    }
+    header("Location: manage_products.php");
+    exit;
+}
+
+
 // Handle product status toggle
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['productID'])) {
+
     $productID = intval($_POST['productID']);
     $status = $_POST['status'];
 
@@ -26,6 +50,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['productID'])) {
     }
 
     header("Location: manage_products.php?status=" . urlencode($_POST['status']));
+    exit;
+}
+
+ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'remove_all_tags') {
+        $stmt = $conn->prepare("UPDATE products SET seasonalTag = NULL WHERE seasonalTag IS NOT NULL");
+        $stmt->execute();
+        $_SESSION['message'] = "All seasonal tags removed.";
+        header("Location: manage_products.php");
+        exit;
+    }
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateProduct'])) {
+    $editProductID = intval($_POST['editProductID']);
+    $editProductName = trim($_POST['editProductName']);
+    $newDescription = trim($_POST['editProductDescription']);
+    $editProductPrice = floatval($_POST['editProductPrice']);
+    $editSeasonalTag = trim($_POST['editSeasonalTag']);
+
+    $stmt = $conn->prepare("UPDATE products SET pName = ?, pDescription = ?, pPrice = ?, seasonalTag = ? WHERE productID = ?");
+    $stmt->bind_param("ssdsi", $editProductName, $newDescription, $editProductPrice, $editSeasonalTag, $editProductID);
+
+    if ($stmt->execute()) {
+        $_SESSION['success'] = "Product updated successfully!";
+    } else {
+        $_SESSION['success'] = "Error updating product.";
+    }
+    header("Location: manage_products.php?status=" . urlencode($_GET['status']));
     exit;
 }
 
@@ -165,7 +217,7 @@ function renderProductsTable($conn, $status = null, $productID = null, $search =
                 <input type="hidden" name="status" value="' . $row['status'] . '">';
 
     if ($row['status'] === 'active') {
-        $html .= '<button class="btn btn-warning btn-sm"
+        $html .= '<button class="btn btn-danger btn-sm"
                     onclick="return confirm(\'Are you sure you want to deactivate this product?\');">
                     Deactivate
                 </button>';
@@ -177,6 +229,18 @@ function renderProductsTable($conn, $status = null, $productID = null, $search =
     }
 
     $html .= '</form>
+            <!-- Edit button -->
+              <button class="btn btn-primary btn-sm ms-2 mt-1 edit-product-btn" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#editProductModal"
+                    data-id="' . $row['productID'] . '"
+                    data-name="' . htmlspecialchars($row['pName']) . '"
+                    data-product-description="' . htmlspecialchars($row['pDescription']) . '"
+                    data-price="' . htmlspecialchars($row['pPrice']) . '"
+                    data-tag="' . htmlspecialchars($row['seasonalTag']) . '">
+                    Edit
+                </button>
+
         </td>
     </tr>';
 
@@ -225,7 +289,7 @@ function renderProductsTable($conn, $status = null, $productID = null, $search =
                     <!-- Filter and Search Controls -->
                     <div class="card p-3 mb-4 shadow-sm rounded-3">
                         <form method="GET" class="row g-3 align-items-center">
-                            <div class="col-4">
+                            <div class="col-4 ">
                                 <label for="status" class="col-form-label fw-semibold">Filter by Status:</label>
                                                   
                             <?php
@@ -255,12 +319,28 @@ function renderProductsTable($conn, $status = null, $productID = null, $search =
                             </select>
                             </div>
 
-                            <div class="d-flex">
+                            <div class="d-flex mb-3">
                                     <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" class="form-control me-2" placeholder="Search by name, ID, Tag...">
                                     <button type="submit" class="btn btn-outline-secondary">Search</button>
                             </div>
 
                         </form>
+
+                        <div class="row">
+                            <div class="col-4 d-flex align-items-center">
+                                    <form method="post" action="manage_products.php">
+                                        <input type="text" name="seasonalTag" id="seasonalTagInput" value="<?= htmlspecialchars($seasonalTag) ?>" class="form-control d-inline w-auto" />
+                                        <button type="submit" name="update_all_tags" class="btn btn-primary">Update</button>
+                                    </form>
+                            </div>
+                            <div class="col-3">
+                                    <form method="post" action="manage_products.php" onsubmit="return confirm('Are you sure you want to remove all seasonal tags?');">
+                                        <input type="hidden" name="action" value="remove_all_tags">
+                                        <button type="submit" class="btn btn-danger">Remove All Seasonal Tags</button>
+                                    </form>
+
+                            </div>
+                        </div>
                     </div>
 
                     <table class="table table-bordered table-hover mt-3">
@@ -279,7 +359,6 @@ function renderProductsTable($conn, $status = null, $productID = null, $search =
                         </thead>
                         <tbody>
                             <?= renderProductsTable($conn, $status, $productID, $search, $category, $page, $perPage); ?>
-
                         </tbody>
 
                     </table>
@@ -301,8 +380,69 @@ function renderProductsTable($conn, $status = null, $productID = null, $search =
         </div>
     </div>
 
+    <!-- Edit Product Modal -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="manage_products.php" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="editProductID" id="editProductID">
+        <div class="mb-3">
+          <label for="editProductName" class="form-label">Product Name</label>
+          <input type="text" class="form-control" name="editProductName" id="editProductName" required>
+        </div>
+         <div class="mb-3">
+                <label for="editProductDescription" class="form-label">Description</label>
+                <textarea class="form-control" name="editProductDescription" id="editProductDescription" rows="4" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="editProductPrice" class="form-label">Price</label>
+          <input type="number" step="0.01" class="form-control" name="editProductPrice" id="editProductPrice" required>
+        </div>
+
+        <?php
+        $globalSeasonalTag = '';
+        $tagResult = $conn->query("SELECT seasonalTag FROM products WHERE seasonalTag IS NOT NULL AND seasonalTag != '' LIMIT 1");
+        if ($row = $tagResult->fetch_assoc()) {
+            $globalSeasonalTag = $row['seasonalTag'];
+        }
+        ?>
+        <div class="mb-3">
+          <label for="editSeasonalTag" class="form-label">Seasonal Tag</label>
+          <input type="text" class="form-control" name="editSeasonalTag" id="editSeasonalTag" placeholder="<?= htmlspecialchars($globalSeasonalTag) ?>">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" name="updateProduct" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const editButtons = document.querySelectorAll('.edit-product-btn');
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            document.getElementById('editProductID').value = button.getAttribute('data-id');
+            document.getElementById('editProductName').value = button.getAttribute('data-name');
+            document.getElementById('editProductPrice').value = button.getAttribute('data-price');
+            document.getElementById('editSeasonalTag').value = button.getAttribute('data-tag');
+            document.getElementById('editProductDescription').value = button.getAttribute('data-product-description');
+        });
+    });
+});
+
+</script>
                                     
 </body>
 </html>

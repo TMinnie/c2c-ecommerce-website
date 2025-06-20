@@ -1,13 +1,17 @@
 <?php
+
+
+
 session_start();
 require '../db.php'; 
 
 header('Content-Type: application/json');
 
-if ($_SESSION['role'] !== 'admin') {
-    header("Location: ../login.php");
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    echo json_encode(['error' => 'Unauthorized']);
     exit();
 }
+
 
 $range = isset($_GET['range']) ? (int)$_GET['range'] : 30;
 

@@ -134,12 +134,13 @@ if ($result && $result->num_rows > 0) {
     </section>
 
     <!--Editor's pick-->
+    <?php if (!empty($featuredProducts)): ?>
     <section id="editors-pick" class="content container-fluid my-5">
         <div class="row g-4 align-items-center text-center text-md-start">
             <div class="col-md-6 col-12 text-center">
                     <h4>Editor's Picks</h4>
                     <h3><?php echo !empty($featuredProducts) ? htmlspecialchars($featuredProducts[0]['seasonalTag']) . ' Gifts' : 'Seasonal Gifts'; ?></h3>
-                    <button class="custom-button">Shop more unique finds</button>
+                    <button class="custom-button" onclick="window.location.href='seasonalview.php'">Shop more unique finds</button>
             </div>
             <?php foreach ($featuredProducts as $product): ?>
                 <div class="pick col-6 col-md-3">
@@ -155,6 +156,7 @@ if ($result && $result->num_rows > 0) {
             <?php endforeach; ?>
         </div>
     </section>
+    <?php endif; ?>
 
     <!--Top sellers-->
     <section id="popular-sellers" class="content container-fluid my-5">

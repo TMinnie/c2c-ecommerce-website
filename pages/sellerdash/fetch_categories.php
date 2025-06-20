@@ -1,12 +1,8 @@
 <?php
-include '../db.php'; // or your connection logic
+session_start();
+include '../db.php';
 
-$result = $conn->query("SELECT * FROM categories WHERE parentID IS NOT NULL ORDER BY parentID ASC");
-$categories = [];
+header('Content-Type: application/json');
 
-while ($row = $result->fetch_assoc()) {
-    $categories[] = $row;
-}
-
-echo json_encode($categories);
+    echo json_encode(['error' => 'Unauthorized']);
 ?>

@@ -380,8 +380,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const row = document.createElement("div");
     row.classList.add("variant-row", "mb-2");
     row.innerHTML = `
-    <input type="text" class="form-control d-inline w-50 w-md-25 me-2" name="sizes[]" placeholder="Size (e.g. M)">
-    <input type="number" class="form-control d-inline w-25" name="quantities[]" placeholder="Quantity">
+    <input type="text" class="form-control d-inline w-50 w-md-25 me-2" name="sizes[]" placeholder="Size (e.g. M)" required>
+    <input type="number" class="form-control d-inline w-25" name="quantities[]" placeholder="QTY" required>
   `;
     wrapper.appendChild(row);
     updateRemoveButtonVisibility();
@@ -434,7 +434,8 @@ document.addEventListener("DOMContentLoaded", () => {
           // Fetch categories for Update Product form
           fetch("sellerdash/fetch_categories.php")
             .then((res) => res.json())
-            .then((categories) => {
+            .then((response) => {
+              const categories = response.data;
               const select = document.getElementById("pCategory");
               select.innerHTML = '<option value="">Select a category</option>';
               categories.forEach((cat) => {

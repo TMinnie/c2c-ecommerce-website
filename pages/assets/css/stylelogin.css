@@ -105,6 +105,11 @@ button.ghost {
   border-color: #fff;
 }
 
+.form-container form {
+    max-height: 100%;
+    overflow-y: auto;
+}
+
 form {
   background-color: #fff;
   display: flex;
