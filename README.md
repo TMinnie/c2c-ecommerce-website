@@ -39,7 +39,7 @@ You can view the live version of Tukocart here:
 
 2. Set up your local web server (e.g., XAMPP, WAMP).
 
-3. Import the database schema from the provided SQL file (database.sql).
+3. Import the database schema from the provided SQL file (tukocart.sql).
 
 4. Configure database connection settings in the PHP config file (db.php).
 
