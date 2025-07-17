@@ -2,13 +2,13 @@
 
 Tukocart is a consumer-to-consumer (C2C) e-commerce platform designed to connect informal sellers directly with buyers. It provides an accessible, secure, and user-friendly online marketplace aimed at empowering small-scale entrepreneurs by expanding their market reach.
 
----
+
 ## 🔗 Hosted At
 
 You can view the live version of Tukocart here:  
 👉 [https://tukocart.free.nf](https://tukocart.free.nf)
 
----
+
 ## Features
 
 - **User Registration & Login:** Secure authentication with role-based access (buyers and sellers).
@@ -20,7 +20,7 @@ You can view the live version of Tukocart here:
 - **Customer Reviews:** Buyers can leave reviews and ratings for products.
 - **Responsive Design:** Works well on desktop and mobile devices.
 
----
+
 
 ## Technologies Used
 
@@ -29,7 +29,7 @@ You can view the live version of Tukocart here:
 - Database: MySQL
 - Libraries & Tools: Bootstrap, jQuery
 
----
+
 
 ## Installation
 
@@ -47,7 +47,7 @@ You can view the live version of Tukocart here:
 
 6. Access the application in your browser at http://localhost/tukocart.
 
----
+
 ## Usage
 Register as a buyer or seller.
 
@@ -59,6 +59,6 @@ Track order statuses.
 
 Leave reviews on purchased products.
 
----
+
 ## Contact
 For questions or support, contact tannelminnie@gmail.com.
