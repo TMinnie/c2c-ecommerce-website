@@ -59,6 +59,3 @@ Track order statuses.
 
 Leave reviews on purchased products.
 
-
-## Contact
-For questions or support, contact tannelminnie@gmail.com.
