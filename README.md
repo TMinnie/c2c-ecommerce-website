@@ -9,7 +9,7 @@ You can view the live version of Tukocart here:
 👉 [https://tukocart.free.nf](https://tukocart.free.nf)
 
 
-## Features
+## 🚀 Features
 
 - **User Registration & Login:** Secure authentication with role-based access (buyers and sellers).
 - **Seller Verification:** Ensures legitimacy of sellers to build trust.
@@ -20,18 +20,14 @@ You can view the live version of Tukocart here:
 - **Customer Reviews:** Buyers can leave reviews and ratings for products.
 - **Responsive Design:** Works well on desktop and mobile devices.
 
-
-
-## Technologies Used
+## 🛠️ Tech Stack
 
 - Frontend: HTML, CSS, JavaScript
 - Backend: PHP
 - Database: MySQL
 - Libraries & Tools: Bootstrap, jQuery
 
-
-
-## Installation
+## 📦 Installation
 
 1. Clone the repository:  
    ```bash
@@ -58,4 +54,5 @@ Buyers can browse, add to cart, and place orders.
 Track order statuses.
 
 Leave reviews on purchased products.
+
 
